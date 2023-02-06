@@ -1,0 +1,17 @@
+{
+
+  "description": "Dodaje listę klubów PZSS do pola dropdown w PractiScore",
+  "manifest_version": 2,
+  "name": "PractiScore dodaj kluby PZSS",
+  "version": "1.0",
+  "homepage_url": "https://pafka.net",
+
+  "content_scripts": [
+    {
+
+      "matches": ["*://*.practiscore.com/*"],
+      "js": ["jquery-3.6.3.min.js", "kluby_nazwy.js","dodajKluby.js"]
+    }
+  ]
+
+}
