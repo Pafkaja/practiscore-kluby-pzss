@@ -1,0 +1,1 @@
+- dodaj pole wyboru regionu i jak region PL to nie trzeba wybierać klubu

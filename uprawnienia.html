@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="utf-8">
+    <title>PractiScore dodaj kluby PZSS – zgoda</title>
+    <style>
+        body { margin: 0; padding: 48px 16px; background: #f4f4f4; color: #222; font: 17px/1.5 system-ui, sans-serif; }
+        main { max-width: 620px; margin: 0 auto; background: #fff; border-radius: 10px; border-top: 10px solid #d9822b;
+               padding: 28px 32px; box-shadow: 0 6px 24px rgba(0, 0, 0, .15); }
+        h1 { margin: 0 0 12px; font-size: 24px; }
+        img { float: right; width: 64px; height: 64px; margin: 0 0 12px 16px; }
+        button { margin-top: 12px; padding: 12px 22px; font: 600 18px system-ui, sans-serif; color: #fff;
+                 background: #d9822b; border: 0; border-radius: 6px; cursor: pointer; }
+        .komunikat { margin-top: 20px; padding: 14px 18px; border-radius: 6px; }
+        .sukces { background: #e6f4e6; color: #2d6b2d; }
+        .blad { background: #fbeaea; color: #9b2320; }
+        code { background: #eee; padding: 1px 5px; border-radius: 3px; }
+        ol { padding-left: 22px; margin-bottom: 0; }
+    </style>
+</head>
+<body>
+<main>
+    <img src="PaFka_ikona.png" alt="">
+    <h1>Zgoda na pobieranie klubów z PZSS</h1>
+    <p>Wtyczka <b>PractiScore dodaj kluby PZSS</b> pobiera aktualną, publiczną listę klubów
+        z rejestru PZSS (<code>soz.pzss.org.pl</code>) za każdym razem, gdy otwierasz formularz na PractiScore.</p>
+    <p>Do tego Firefox wymaga Twojej zgody. Wtyczka niczego do PZSS nie wysyła, tylko odczytuje listę klubów.</p>
+    <button id="zezwol" type="button">Zezwól na dostęp do soz.pzss.org.pl</button>
+
+    <div id="sukces" class="komunikat sukces" hidden>
+        Gotowe. Wracam do PractiScore i pobieram kluby…
+    </div>
+    <div id="odmowa" class="komunikat blad" hidden>
+        <b>Zgoda nie została udzielona.</b> Możesz spróbować jeszcze raz przyciskiem powyżej albo włączyć ją ręcznie:
+        <ol>
+            <li>wpisz w pasku adresu <code>about:addons</code>,</li>
+            <li>kliknij wtyczkę <b>PractiScore dodaj kluby PZSS</b>,</li>
+            <li>w zakładce <b>Uprawnienia</b> włącz dostęp do <code>soz.pzss.org.pl</code>,</li>
+            <li>odśwież stronę formularza na PractiScore.</li>
+        </ol>
+    </div>
+</main>
+<script src="uprawnienia.js"></script>
+</body>
+</html>
