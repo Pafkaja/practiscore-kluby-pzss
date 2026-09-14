@@ -27,16 +27,20 @@ $( document ).ready( function() {
 // Lista uzywana przez przycisk: do czasu pobrania z PZSS (albo gdy sie nie uda) - wbudowana.
 let kluby_aktualne = kluby_nazwy;
 
+const api = globalThis.browser || globalThis.chrome;
+
 // Po udzieleniu zgody na stronie uprawnienia.html wtyczka kaze pobrac kluby jeszcze raz.
-browser.runtime.onMessage.addListener(function (wiadomosc) {
+api.runtime.onMessage.addListener(function (wiadomosc, nadawca, sendResponse) {
     if (wiadomosc && wiadomosc.typ === "uprawnieniaNadane") {
         pobierz_kluby();
+        // Chrome odrzuca tabs.sendMessage, gdy odbiorca nie odpowie.
+        sendResponse({ ok: true });
     }
 });
 
 function pobierz_kluby() {
     pokaz_okienko("info", "Pobieram kluby z PZSS…", "Za chwilę lista klubów będzie gotowa.");
-    browser.runtime.sendMessage({ typ: "pobierzKluby" }).then(function (wynik) {
+    api.runtime.sendMessage({ typ: "pobierzKluby" }).then(function (wynik) {
         if (wynik && wynik.kluby) {
             kluby_aktualne = wynik.kluby;
             const okienko = pokaz_okienko("sukces", "Pobrano " + wynik.kluby.length + " klubów z PZSS",
@@ -48,7 +52,7 @@ function pobierz_kluby() {
                 "Bez niej użyje listy wbudowanej (" + kluby_nazwy.length + " klubów), która może być nieaktualna.",
                 [
                     { tekst: "Zezwól", glowny: true, akcja: function () {
-                        browser.runtime.sendMessage({ typ: "otworzUprawnienia" });
+                        api.runtime.sendMessage({ typ: "otworzUprawnienia" });
                     } },
                     { tekst: "Użyj listy wbudowanej", akcja: zamknij_okienko },
                 ]);

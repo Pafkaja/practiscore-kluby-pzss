@@ -1,5 +1,13 @@
 // Pobiera liste klubow z rejestru PZSS na prosbe content scriptu (dodajKluby.js).
 // Zapytanie idzie stad, a nie ze strony PractiScore, bo content script podlega CORS.
+// Firefox laduje ten plik jako background.scripts (razem z kluby_format.js),
+// Chrome jako service worker - wtedy kluby_format.js dociagamy przez importScripts.
+
+if (typeof importScripts === "function") {
+    importScripts("kluby_format.js");
+}
+
+const api = globalThis.browser || globalThis.chrome;
 
 const KLUBY_DATA_URL = "https://soz.pzss.org.pl/Clubs/IndexDataAjax";
 const UPRAWNIENIE_PZSS = "https://soz.pzss.org.pl/*";
@@ -50,25 +58,29 @@ async function pobierz_kluby_z_pzss() {
 }
 
 async function pobierz_kluby_jesli_wolno() {
-    const wolno = await browser.permissions.contains({ origins: [UPRAWNIENIE_PZSS] });
+    const wolno = await api.permissions.contains({ origins: [UPRAWNIENIE_PZSS] });
     if (!wolno) {
         return { brakUprawnien: true };
     }
     return pobierz_kluby_z_pzss();
 }
 
-browser.runtime.onMessage.addListener(function (wiadomosc, nadawca) {
+// Odpowiedz przez sendResponse + return true (Chrome nie obsluguje zwracania Promise z listenera).
+api.runtime.onMessage.addListener(function (wiadomosc, nadawca, sendResponse) {
     if (!wiadomosc) {
         return;
     }
     if (wiadomosc.typ === "pobierzKluby") {
-        return pobierz_kluby_jesli_wolno();
+        pobierz_kluby_jesli_wolno().then(sendResponse, function (e) {
+            sendResponse({ blad: String(e.message || e) });
+        });
+        return true;
     }
     if (wiadomosc.typ === "otworzUprawnienia" && nadawca.tab) {
         // Zgode mozna wywolac tylko ze strony wtyczki, wiec otwieramy ja w nowej karcie.
         // Id karty PractiScore w adresie, zeby po zgodzie do niej wrocic.
-        browser.tabs.create({
-            url: browser.runtime.getURL("uprawnienia.html") + "?karta=" + nadawca.tab.id,
+        api.tabs.create({
+            url: api.runtime.getURL("uprawnienia.html") + "?karta=" + nadawca.tab.id,
             index: nadawca.tab.index + 1,
         });
     }
