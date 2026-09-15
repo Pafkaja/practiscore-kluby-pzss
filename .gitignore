@@ -2,3 +2,5 @@ web-ext-artifacts/
 *.zip
 dist/
 stare/
+.idea/
+publikacja/
