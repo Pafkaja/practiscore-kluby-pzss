@@ -2,8 +2,13 @@
 
 Wtyczka do przeglądarki dla organizatorów zawodów strzeleckich w Polsce, którzy prowadzą zapisy przez [PractiScore](https://practiscore.com). Jednym kliknięciem wstawia do pola typu Drop Down w formularzu zapisów aktualną listę klubów licencjonowanych przez PZSS.
 
-- Firefox: [addons.mozilla.org](https://addons.mozilla.org/firefox/addon/practiscore-dodaj-kluby-pzss/)
-- Chrome / Edge: paczka budowana z tego repozytorium (`./buduj.sh`)
+## Instalacja
+
+- **Firefox:** [Firefox Add-ons](https://addons.mozilla.org/firefox/addon/practiscore-dodaj-kluby-pzss/)
+- **Chrome:** [Chrome Web Store](https://chromewebstore.google.com/detail/practiscore-dodaj-kluby-p/cdmdfcdgdjnalpaoplhhcgbjefejljph)
+- **Edge:** z [Chrome Web Store](https://chromewebstore.google.com/detail/practiscore-dodaj-kluby-p/cdmdfcdgdjnalpaoplhhcgbjefejljph). Edge przy pierwszej wizycie w sklepie poprosi o włączenie opcji „Zezwalaj na rozszerzenia z innych sklepów”.
+
+Po instalacji otwórz edytor formularza zapisów na practiscore.com, dodaj pole **Drop Down Field** i kliknij przy nim **Dodaj kluby PZSS**.
 
 ## Jak działa
 
@@ -41,7 +46,7 @@ node generuj_kluby_nazwy.js   # opcjonalnie: odśwież listę wbudowaną przed w
 Wynik:
 
 - `web-ext-artifacts/practiscore_dodaj_kluby_pzss-<wersja>-firefox.zip`: Firefox (AMO)
-- `web-ext-artifacts/practiscore_dodaj_kluby_pzss-<wersja>-chrome.zip`: Chrome Web Store i Edge Add-ons
+- `web-ext-artifacts/practiscore_dodaj_kluby_pzss-<wersja>-chrome.zip`: Chrome Web Store (i ewentualnie Edge Add-ons)
 - `dist/firefox`, `dist/chrome`: rozpakowane wersje do testów
 
 Przed każdym wydaniem zwiększ `version` w `manifest.json`.
