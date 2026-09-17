@@ -74,10 +74,6 @@ Przed każdym wydaniem zwiększ `version` w `manifest.json`.
 
 Potem otwórz edytor formularza zapisów na practiscore.com (wymaga zalogowania). Żeby sprawdzić scenariusz bez zgody, wyłącz dostęp do `soz.pzss.org.pl` w ustawieniach wtyczki i odśwież stronę.
 
-## Pomysły
-
-- Pole wyboru regionu: gdy region to PL, wybór klubu nie jest wymagany.
-
 ## Licencja
 
 [MIT](LICENSE). Wtyczka jest niezależnym projektem i nie jest powiązana z PractiScore ani z Polskim Związkiem Strzelectwa Sportowego.
