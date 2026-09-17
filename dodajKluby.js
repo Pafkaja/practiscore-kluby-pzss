@@ -157,13 +157,16 @@ function szukaj_formularza() {
             var groupNumber = group.attributes.id.value.replace('group_', '');
             // console.log("groupNumber", groupNumber);
             const button_id = "dodaj_kluby_" + groupNumber;
-            group.innerHTML = '<div className="pull-right"><a class="btn btn-xs btn-default" id="' + button_id + '" href="#dodajkluby">' +
-                '<i className="fas fa-cog"></i> Dodaj kluby PZSS</a> </div>' + group.innerHTML;
-
-            $("#" + button_id).click(function (event) {
-                dodaj_kluby(group, groupNumber);
-                return false;
-            });
+            // Dokladamy element zamiast przepisywac group.innerHTML - przepisanie odtwarza cala grupe
+            // i gubi obsluge klikniec podpieta przez PractiScore (Show Properties, add option).
+            const przycisk = $('<a class="btn btn-xs btn-default" href="#dodajkluby"></a>')
+                .attr("id", button_id)
+                .append('<i class="fas fa-cog"></i>', " Dodaj kluby PZSS")
+                .click(function () {
+                    dodaj_kluby(group, groupNumber);
+                    return false;
+                });
+            $(group).prepend($('<div class="pull-right"></div>').append(przycisk));
         });
     }
 
@@ -176,22 +179,41 @@ function escapuj_html(tekst) {
         .replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
+// Numery wstawianych opcji zaczynaja sie od 1000, zeby nie zderzyly sie z opcjami,
+// ktore organizator dopisze pozniej przyciskiem "add option" (PractiScore numeruje je od 1).
+const PIERWSZY_NUMER_OPCJI = 1000;
+
 function dodaj_kluby( group, groupNumber ) {
-    // console.log("DODAJ KLUBY", group, groupNumber);
     $(group).find("#required"+groupNumber).prop("checked",true);
     $(group).find("#label"+groupNumber).val("Klub PZSS")
     $(group).find("#helper_text"+groupNumber).val("Wybierz z listy klub PZSS, który reprezentujesz startując na tych zawodach")
 
-    $(group).find("#properties_"+ groupNumber+" > div:nth-child(4)").empty();
+    // Sekcja opcji w edytorze PractiScore: wiersze .optionEdit, potem .moreOption_N (tu "add option"
+    // dokleja nowe wiersze) i przycisk "add option". Podmieniamy tylko wiersze, reszta zostaje.
+    const wlasciwosci = $(group).find("#properties_" + groupNumber);
+    let sekcja = wlasciwosci.find(".moreOption_" + groupNumber).parent();
+    if (sekcja.length === 0) {
+        sekcja = wlasciwosci.children("div").eq(2);
+    }
+    sekcja.children(".optionEdit").remove();
 
-    var new_html = "";
-    var o = 0;
-    kluby_aktualne.forEach( function(nazwa){
-        // console.log("nazwa", nazwa);
-        new_html = new_html + '<div class="optionEdit row"><div class="col-md-3"></div><div class="input-group col-xs-9 col-md-5">'+
-                '<input readonly type="text" class="form-control" id="option_text_' + groupNumber + '_' + o + '" name="field[' + groupNumber + '][option][' + o + '][name]" required="required"'+
-                'value="'+escapuj_html(nazwa)+'"/></div><div class="col-md-4"></div></div>';
-        o++;
+    const g = groupNumber;
+    let new_html = "";
+    kluby_aktualne.forEach(function (nazwa, nr) {
+        const o = PIERWSZY_NUMER_OPCJI + nr;
+        new_html += '<div class="optionEdit row option_' + g + '" id="option_' + g + '_' + o + '">' +
+            '<label class="col-xs-12 col-md-3 control-label">&nbsp;</label>' +
+            '<div class="input-group col-xs-9 col-md-5">' +
+            '<span class="input-group-addon"><input id="radio_' + g + '_' + o + '" name="field[' + g + '][option][' + o + '][checked]" type="checkbox" value="1"></span>' +
+            '<input readonly type="text" class="form-control" placeholder="option name" id="option_text_' + g + '_' + o + '" ' +
+            'name="field[' + g + '][option][' + o + '][name]" required="required" value="' + escapuj_html(nazwa) + '">' +
+            '</div><div class="col-xs-1"></div></div>';
     });
-    $(group).find("#properties_"+ groupNumber+" > div:nth-child(4)").append(new_html);
+
+    const miejsce = sekcja.children(".moreOption_" + groupNumber);
+    if (miejsce.length > 0) {
+        miejsce.before(new_html);
+    } else {
+        sekcja.prepend(new_html);
+    }
 }

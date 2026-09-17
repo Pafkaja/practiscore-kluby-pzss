@@ -85,3 +85,8 @@ api.runtime.onMessage.addListener(function (wiadomosc, nadawca, sendResponse) {
         });
     }
 });
+
+// Ikona wtyczki na pasku narzedzi otwiera konwerter CSV z PractiScore.
+api.action.onClicked.addListener(function () {
+    api.tabs.create({ url: api.runtime.getURL("konwerter.html") });
+});

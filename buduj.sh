@@ -11,9 +11,10 @@ PLIKI=(
     background.js kluby_format.js
     jquery-3.6.3.min.js kluby_nazwy.js dodajKluby.js
     uprawnienia.html uprawnienia.js
+    konwerter.html konwerter.js kluby_historyczne.js csv.js
 )
 
-node --test kluby_format.test.js
+node --test kluby_format.test.js csv.test.js
 
 rm -rf dist
 mkdir -p dist/firefox dist/chrome web-ext-artifacts

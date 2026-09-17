@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Konwerter CSV z PractiScore – kluby PZSS</title>
+    <style>
+        :root { --akcent: #337ab7; --sukces: #3c8d3c; --uwaga: #d9822b; --blad: #c9302c; }
+        body { margin: 0; padding: 32px 16px; background: #f4f4f4; color: #222; font: 16px/1.5 system-ui, sans-serif; }
+        main { max-width: 860px; margin: 0 auto; background: #fff; border-radius: 10px; border-top: 10px solid var(--akcent);
+               padding: 24px 32px 32px; box-shadow: 0 6px 24px rgba(0, 0, 0, .15); }
+        h1 { margin: 0 0 8px; font-size: 26px; }
+        h2 { margin: 28px 0 10px; font-size: 19px; }
+        img { float: right; width: 64px; height: 64px; margin: 0 0 12px 16px; }
+        code { background: #eee; padding: 1px 5px; border-radius: 3px; }
+        button { padding: 10px 20px; font: 600 16px system-ui, sans-serif; color: #fff; background: var(--akcent);
+                 border: 0; border-radius: 6px; cursor: pointer; }
+        button:disabled { opacity: .5; cursor: default; }
+        .status { margin: 16px 0; padding: 12px 16px; border-radius: 6px; border-left: 6px solid; background: #f7f7f7; }
+        .status.info { border-color: var(--akcent); }
+        .status.sukces { border-color: var(--sukces); }
+        .status.uwaga { border-color: var(--uwaga); }
+        .status.blad { border-color: var(--blad); }
+        .status button { margin-top: 10px; background: var(--uwaga); }
+        #upusc { display: block; margin-top: 8px; padding: 32px 16px; text-align: center; border: 3px dashed #bbb;
+                 border-radius: 10px; cursor: pointer; color: #555; }
+        #upusc.nad { border-color: var(--akcent); background: #eef4fb; color: var(--akcent); }
+        #upusc b { color: var(--akcent); }
+        #plik { display: none; }
+        .wiersz { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin: 12px 0; }
+        select { font: inherit; padding: 6px 8px; max-width: 100%; }
+        .podsumowanie { font-size: 18px; font-weight: 600; }
+        .tabela { overflow-x: auto; max-height: 420px; overflow-y: auto; border: 1px solid #ddd; border-radius: 6px; }
+        table { border-collapse: collapse; width: 100%; font-size: 15px; }
+        th, td { text-align: left; padding: 6px 12px; border-bottom: 1px solid #eee; }
+        th { position: sticky; top: 0; background: #fafafa; }
+        td.ile { text-align: right; width: 4em; }
+        td.slug { font-family: ui-monospace, monospace; color: #555; }
+        .nierozpoznane td.slug { color: var(--blad); }
+        .opis { color: #555; }
+        #pobierz { background: var(--sukces); font-size: 18px; padding: 12px 24px; }
+    </style>
+</head>
+<body>
+<main>
+    <img src="PaFka_ikona.png" alt="">
+    <h1>Konwerter CSV z PractiScore</h1>
+    <p class="opis">PractiScore w eksporcie zawodników (CSV) zapisuje zamiast nazwy klubu jej uproszczoną wersję,
+        np. <code>ardea-gdansk</code> zamiast <b>ARDEA Gdańsk</b>. Wczytaj plik, a konwerter zamieni te wartości
+        na nazwy klubów z rejestru PZSS. Plik jest przetwarzany tylko w Twojej przeglądarce i nigdzie nie jest wysyłany.</p>
+
+    <div id="status" class="status info">Pobieram listę klubów z PZSS…</div>
+
+    <h2>1. Wybierz plik CSV</h2>
+    <label id="upusc" for="plik">
+        Przeciągnij tutaj plik CSV wyeksportowany z PractiScore<br>albo <b>kliknij, żeby go wybrać</b>
+    </label>
+    <input id="plik" type="file" accept=".csv,text/csv">
+
+    <section id="wynik" hidden>
+        <h2>2. Sprawdź wynik</h2>
+        <div class="wiersz">
+            <span>Plik: <b id="nazwa_pliku"></b> (<span id="liczba_wierszy"></span>)</span>
+            <label>Kolumna z klubem: <select id="kolumna"></select></label>
+        </div>
+        <p class="podsumowanie" id="podsumowanie"></p>
+
+        <div id="blok_nierozpoznane" hidden>
+            <h2>Wartości nierozpoznane (zostaną bez zmian)</h2>
+            <p class="opis">Zwykle to opcje dopisane ręcznie w formularzu, np. „Mojego klubu nie ma na liście”.</p>
+            <div class="tabela"><table class="nierozpoznane">
+                <thead><tr><th>Wartość w CSV</th><th>Liczba</th></tr></thead>
+                <tbody id="tabela_nierozpoznane"></tbody>
+            </table></div>
+        </div>
+
+        <div id="blok_rozpoznane" hidden>
+            <h2>Rozpoznane kluby</h2>
+            <div class="tabela"><table>
+                <thead><tr><th>Wartość w CSV</th><th>Nazwa klubu</th><th>Liczba</th></tr></thead>
+                <tbody id="tabela_rozpoznane"></tbody>
+            </table></div>
+        </div>
+
+        <h2>3. Pobierz poprawiony plik</h2>
+        <p class="opis">Pozostałe kolumny zostają bez zmian. Plik jest zapisany w UTF-8, więc Excel pokaże polskie znaki.</p>
+        <button id="pobierz" type="button">Pobierz poprawiony CSV</button>
+    </section>
+</main>
+<script src="kluby_nazwy.js"></script>
+<script src="kluby_historyczne.js"></script>
+<script src="kluby_format.js"></script>
+<script src="csv.js"></script>
+<script src="konwerter.js"></script>
+</body>
+</html>
